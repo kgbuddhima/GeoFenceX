@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps" 
+             x:Class="GeoFenceX.Views.GeoXPage">
+    <ContentPage.Content>
+        <!--<AbsoluteLayout x:Name="parentLayout">
+            <maps:Map AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                      AbsoluteLayout.LayoutFlags="All"  
+                      HorizontalOptions="FillAndExpand" x:Name="mapView" 
+                      IsShowingUser="true" MapType="Street">
+            
+            </maps:Map>
+        </AbsoluteLayout>-->
+        <StackLayout>
+            <Button Text="Sample" TextColor="Black" BackgroundColor="GreenYellow" Clicked="Button_Clicked"></Button>
+            <ListView x:Name="listView" SeparatorVisibility="Default" HasUnevenRows="True">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout>
+                            <!--<Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    --><!--<RowDefinition/>
+                                    <RowDefinition/>--><!--
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>-->
+                                <Label Text="{Binding Name}" />
+                                <Label Text="{Binding Location}"/>
+                                <!--<Label Text="{Binding Longitude}"/>
+                                <Label Text="{Binding LastEnteredTime}"/>
+                                <Label Text="{Binding LastExitedTime}"/>-->
+                            <!--</Grid>-->
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+      
+    </ContentPage.Content>
+</ContentPage>
