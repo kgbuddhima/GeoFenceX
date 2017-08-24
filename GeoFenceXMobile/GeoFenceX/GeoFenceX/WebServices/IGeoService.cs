@@ -13,13 +13,13 @@ namespace GeoFenceX.WebServices
         /// Get Geo Location List Async
         /// </summary>
         /// <returns></returns>
-        Task<List<Place>> GetGeoLocationsAsync();
+        Task<List<Region>> GetGeoLocationsAsync();
 
         /// <summary>
         /// Update user's attendence data by sending them to API
         /// </summary>
         /// <param name="attendenceData"></param>
         /// <returns></returns>
-        Task<string> UpdateAttendence(AttendenceData attendenceData);
+        Task<string> UpdateAttendence(AttendanceData attendenceData);
     }
 }

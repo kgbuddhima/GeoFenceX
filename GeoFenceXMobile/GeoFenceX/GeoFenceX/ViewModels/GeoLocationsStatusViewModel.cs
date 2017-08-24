@@ -12,23 +12,23 @@ namespace GeoFenceX
 {
     public class GeoLocationsStatusViewModel
     {
-        public ObservableCollection<Place> LocationStatusCollection { get; set; }
+        public ObservableCollection<Region> LocationStatusCollection { get; set; }
 
         public GeoLocationsStatusViewModel()
         {
-            LocationStatusCollection = new ObservableCollection<Place>();
+            LocationStatusCollection = new ObservableCollection<Region>();
 
             
 
             MessagingCenter.Subscribe<GeofenceLocation>(this, "location", (location) =>
             {
-                Place p = new Place()
+                Region p = new Region()
                 {
                     Name = "location",
                     Latitude = location.Latitude,
                     Longitude = location.Longitude,
-                    LastEnteredTime = location.Date.ToString(),
-                    LastExitedTime = location.Date.ToString()
+                    LastEnteredTime = location.Date,
+                    LastExitedTime = location.Date
                 };
                 LocationStatusCollection.Add(p);
             });

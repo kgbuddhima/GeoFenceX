@@ -16,22 +16,22 @@ namespace GeoFenceX.Helpers
     {
         public void OnMonitoringStarted(string region)
         {
-            Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Monitoring in region", region));
+           // Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Monitoring in region", region));
         }
 
         public void OnMonitoringStopped()
         {
-            Debug.WriteLine(string.Format("{0} - {1}", CrossGeofence.Id, "Monitoring stopped for all regions"));
+          //  Debug.WriteLine(string.Format("{0} - {1}", CrossGeofence.Id, "Monitoring stopped for all regions"));
         }
 
         public void OnMonitoringStopped(string identifier)
         {
-            Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Monitoring stopped in region", identifier));
+           // Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Monitoring stopped in region", identifier));
         }
 
         public void OnError(string error)
         {
-            Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Error", error));
+           // Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Error", error));
         }
 
 
@@ -45,7 +45,7 @@ namespace GeoFenceX.Helpers
 
         public void OnAppStarted()
         {
-            Debug.WriteLine(string.Format("{0}", CrossGeofence.Id));
+          //  Debug.WriteLine(string.Format("{0}", CrossGeofence.Id));
         }
 
         public void OnLocationChanged(GeofenceLocation location)

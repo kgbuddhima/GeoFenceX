@@ -23,32 +23,27 @@ namespace GeoFenceX.WebServices
         /// Get Geo Location List Async from API
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Place>> GetGeoLocationsAsync()
+        public async Task<List<Region>> GetGeoLocationsAsync()
         {
-            List<Place> col = new List<Place>();
+            List<Region> col = new List<Region>();
             try
             {
-                string strContent = "GetRegionList";
-                var json = JsonConvert.SerializeObject(strContent);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
                 HttpResponseMessage response = null;
-                response = await client.PostAsync(Constants.urlUpdateAttendence, content);
+                response = await client.GetAsync(Constants.urlGetLocationList);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // result = Constants.S_OK;
-                    col = JsonConvert.DeserializeObject<List<Place>>(Convert.ToString(response.Content));
+                    string content = await response.Content.ReadAsStringAsync();
+                    col = JsonConvert.DeserializeObject<List<Region>>(content);
                 }
                 else
                 {
-                   // result = Constants.S_NotSuccess;
+                    col = null;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+               // throw;
             }
             return col;
         }
@@ -58,7 +53,7 @@ namespace GeoFenceX.WebServices
         /// </summary>
         /// <param name="attendenceData"></param>
         /// <returns></returns>
-        public async Task<string> UpdateAttendence(AttendenceData attendenceData)
+        public async Task<string> UpdateAttendence(AttendanceData attendenceData)
         {
             string result = Constants.S_NotSuccess;
             try
@@ -77,7 +72,6 @@ namespace GeoFenceX.WebServices
             }
             catch (Exception)
             {
-
                 throw;
             }
             return result;

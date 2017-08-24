@@ -10,6 +10,8 @@ using Xamarin.Forms.Maps;
 using Xamarin.Forms.Xaml;
 using Geofence.Plugin;
 using System.Collections.ObjectModel;
+using GeoFenceX.WebServices;
+using GeoFenceX.Models;
 
 namespace GeoFenceX.Views
 {
@@ -19,50 +21,120 @@ namespace GeoFenceX.Views
         List<GeofenceCircularRegion> regionCollectionCircular = new List<GeofenceCircularRegion>();
 
         GeoLocationsStatusViewModel model;
-        ObservableCollection<Place> userPlacesCollection;
-
+        ObservableCollection<Region> userPlacesCollection;
+        IGeoService _service;
 
         public GeoXPage()
         {
             InitializeComponent();
-
+            _service = new GeoService();
             model = new GeoLocationsStatusViewModel();
             this.BindingContext = model;
 
-            GetUserregionCollection();
-
             userPlacesCollection = model.LocationStatusCollection;
 
-            CrossGeofence.Current.StartMonitoring(regionCollectionCircular);
-            CrossGeofence.GeofencePriority = GeofencePriority.HighAccuracy;
             listView.ItemsSource = userPlacesCollection;
-
 
             MessagingCenter.Subscribe<GeofenceResult>(this, "region", (region) =>
             {
-                DisplayAlert("Region", region.TransitionName, "OK","Cancel");
-                Place p = new Place()
+                DisplayAlert("Region", region.TransitionName, "OK", "Cancel");
+                Region p = new Region()
                 {
-                    Name = region.TransitionName + "|" + region,
+                    Name = region.TransitionName + "|" + region.RegionId,
                     Latitude = region.Latitude,
                     Longitude = region.Longitude,
-                    LastEnteredTime = region.LastEnterTime.ToString(),
-                    LastExitedTime = region.LastExitTime.ToString()
+                    LastEnteredTime = (DateTime)region.LastEnterTime,
+                    LastExitedTime = (DateTime)region.LastExitTime
                 };
                 model.LocationStatusCollection.Add(p);
+
+                AttendanceData att = new AttendanceData()
+                {
+                    Name = region.RegionId,
+                    Latitude = region.Latitude,
+                    Longitude = region.Longitude,
+                    TransitionName = region.TransitionName,
+                    TransitionTime = region.TransitionName== "Exited" ? p.LastExitedTime:p.LastEnteredTime,
+                    UserId =1
+                };
+                UpdateAttendance(att);
             });
         }
 
         protected override void OnAppearing()
         {
-            
+            GetUserregionCollection();
         }
 
-            /// <summary>
-            /// Get Regions to monitor
-            /// </summary>
-            private void GetUserregionCollection()
+        /// <summary>
+        /// Send attendance data to api
+        /// </summary>
+        /// <param name="attendance"></param>
+        private async void UpdateAttendance(AttendanceData attendance)
         {
+            try
+            {
+                await _service.UpdateAttendence(attendance);
+            }
+            catch (Exception ex)
+            {
+
+               // throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Regions to monitor
+        /// </summary>
+        private async void GetUserregionCollection()
+        {
+            CrossGeofence.GeofencePriority = GeofencePriority.HighAccuracy;
+            List<Region> regions = await _service.GetGeoLocationsAsync();
+            foreach (Region r in regions)
+            {
+                CrossGeofence.Current.StartMonitoring(new GeofenceCircularRegion(r.Name, r.Latitude, r.Longitude, r.Radius, true, true, true, true, true, true, true)
+                {
+                    NotificationStayMessage = "stay !",
+                    NotificationEntryMessage = "entry !",
+                    NotificationExitMessage = "exit !",
+                    NotifyOnStay = true,
+                    StayedInThresholdDuration = TimeSpan.FromSeconds(10)
+                });
+            }
+        }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+               
+                model.LocationStatusCollection.Clear();
+
+                IReadOnlyDictionary<string, GeofenceCircularRegion> Regions = CrossGeofence.Current.Regions;
+                foreach (GeofenceCircularRegion g in Regions.Values)
+                {
+                    Region p = new Region()
+                    {
+                        Name = g.Id,
+                        Latitude = g.Latitude,
+                        Longitude = g.Longitude,
+                     //   LastEnteredTime = g..ToString(),
+                     //   LastExitedTime = g.LastExitTime.ToString()
+                    };
+                    model.LocationStatusCollection.Add(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("",ex.Message,"OK");
+            }
+        }
+
+        
+    }
+}
+
+/*
             regionCollectionCircular.Add(new GeofenceCircularRegion("KesHome1", 6.79145087, 79.9490901, 10, true, true, true, true, true, true, true)
             {
                 NotificationStayMessage = "stay message!",
@@ -89,37 +161,4 @@ namespace GeoFenceX.Views
                 NotifyOnStay = true,
                 StayedInThresholdDuration = TimeSpan.FromSeconds(5)
             });
-        }
-
-        private void Button_Clicked(object sender, EventArgs e)
-        {
-            try
-            {
-
-                model.LocationStatusCollection.Clear();
-
-                IReadOnlyDictionary<string, GeofenceCircularRegion> Regions = CrossGeofence.Current.Regions;
-                foreach (GeofenceCircularRegion g in Regions.Values)
-                {
-                    Place p = new Place()
-                    {
-                        Name = g.Id,
-                        Latitude = g.Latitude,
-                        Longitude = g.Longitude,
-                     //   LastEnteredTime = g..ToString(),
-                     //   LastExitedTime = g.LastExitTime.ToString()
-                    };
-                    model.LocationStatusCollection.Add(p);
-                }
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("",ex.Message,"OK");
-            }
-          
-
-        }
-
-        
-    }
-}
+            */

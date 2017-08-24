@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace GeoFenceX.Models
 {
-    public class AttendenceData:Place
+    public class AttendanceData:Region
     {
         public int UserId { get; set; }
 
         public string TransitionName { get; set; }
+
+        public DateTime TransitionTime { get; set; }
     }
 }
