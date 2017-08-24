@@ -1,0 +1,56 @@
+﻿@model GeofenceWeb.ViewModel.AttendanceDataViewModel
+
+@{
+    ViewBag.Title = "AttendanceView";
+}
+
+<h2>AttendanceView</h2>
+
+<p>
+    @*@Html.ActionLink("Create New", "Create", new {ds = Model.Attendance.RecordId.ToString() })*@
+    @Html.ActionLink("Search", "SearchByUser","Home")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @*@Html.DisplayNameFor(model => model.Attendance)*@
+            RecordId
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.UserId)*@
+            UserId
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.TransitionName)*@
+            Transition
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.TransitionTime)*@
+            DateTime
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.AttendanceDataList) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.RecordId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransitionName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransitionTime)
+        </td>
+        @*<td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </td>*@
+    </tr>
+}
+
+</table>
