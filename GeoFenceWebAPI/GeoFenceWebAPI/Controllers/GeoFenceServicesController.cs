@@ -30,12 +30,11 @@ namespace GeoFenceWebAPI.Controllers
                 if (collection != null)
                 {
                     responseMessage = JsonConvert.SerializeObject(collection);
-                    return Request.CreateResponse(HttpStatusCode.OK, responseMessage);
+                    return Request.CreateResponse(HttpStatusCode.OK, collection);
                 }
                 else
                 {
-                    responseMessage = "";
-                    return Request.CreateResponse(HttpStatusCode.NotFound, responseMessage);
+                    return Request.CreateResponse(HttpStatusCode.NotFound);
                 }
             }
 
@@ -57,12 +56,11 @@ namespace GeoFenceWebAPI.Controllers
                 if (collection != null)
                 {
                     responseMessage = JsonConvert.SerializeObject(collection);
-                    return Request.CreateResponse(HttpStatusCode.OK, responseMessage);
+                    return Request.CreateResponse(HttpStatusCode.OK, collection);
                 }
                 else
                 {
-                    responseMessage = "";
-                    return Request.CreateResponse(HttpStatusCode.NotFound, responseMessage);
+                    return Request.CreateResponse(HttpStatusCode.NotFound);
                 }
             }
 
