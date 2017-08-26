@@ -31,16 +31,17 @@ namespace GeoFenceX.Views
             model = new GeoLocationsStatusViewModel();
             this.BindingContext = model;
 
+            GetUserregionCollection();
             userPlacesCollection = model.LocationStatusCollection;
 
             listView.ItemsSource = userPlacesCollection;
 
-            MessagingCenter.Subscribe<GeofenceResult>(this, "region", (region) =>
+           /* MessagingCenter.Subscribe<GeofenceResult>(this, "region", async (region) =>
             {
-                DisplayAlert("Region", region.TransitionName, "OK", "Cancel");
+                await DisplayAlert("Region", region.TransitionName, "OK", "Cancel");
                 Region p = new Region()
                 {
-                    Name = region.TransitionName + "|" + region.RegionId,
+                    Name = region.TransitionName.ToString() + "|" + region.RegionId,
                     Latitude = region.Latitude,
                     Longitude = region.Longitude,
                     LastEnteredTime = (DateTime)region.LastEnterTime,
@@ -54,27 +55,27 @@ namespace GeoFenceX.Views
                     Latitude = region.Latitude,
                     Longitude = region.Longitude,
                     TransitionName = region.TransitionName,
-                    TransitionTime = region.TransitionName== "Exited" ? p.LastExitedTime:p.LastEnteredTime,
+                    TransitionTime = region.TransitionName== GeofenceTransition.Exited.ToString() ? p.LastExitedTime:p.LastEnteredTime,
                     UserId =1
                 };
-                UpdateAttendance(att);
-            });
+                await UpdateAttendanceAsync(att);
+            });*/
         }
 
         protected override void OnAppearing()
         {
-            GetUserregionCollection();
+            
         }
 
         /// <summary>
         /// Send attendance data to api
         /// </summary>
         /// <param name="attendance"></param>
-        private async void UpdateAttendance(AttendanceData attendance)
+        private async Task UpdateAttendanceAsync(AttendanceData attendance)
         {
             try
             {
-                await _service.UpdateAttendence(attendance);
+                await _service.UpdateAttendenceAsync(attendance);
             }
             catch (Exception ex)
             {
@@ -92,41 +93,68 @@ namespace GeoFenceX.Views
             List<Region> regions = await _service.GetGeoLocationsAsync();
             foreach (Region r in regions)
             {
-                CrossGeofence.Current.StartMonitoring(new GeofenceCircularRegion(r.Name, r.Latitude, r.Longitude, r.Radius, true, true, true, true, true, true, true)
+                CrossGeofence.Current.StartMonitoring(new GeofenceCircularRegion(r.Name, r.Latitude, r.Longitude, r.Radius)
                 {
-                    NotificationStayMessage = "stay !",
-                    NotificationEntryMessage = "entry !",
-                    NotificationExitMessage = "exit !",
+                    NotifyOnEntry = true,
+                    NotifyOnExit = true,
+                    ShowEntryNotification = true,
+                    ShowExitNotification = true,
+                    ShowNotification = true,
+                    Persistent = true,
+                    NotificationStayMessage = "stay !" + r.Name,
+                    NotificationEntryMessage = "entry !"+r.Name,
+                    NotificationExitMessage = "exit !"+r.Name,
                     NotifyOnStay = true,
-                    StayedInThresholdDuration = TimeSpan.FromSeconds(10)
+                    StayedInThresholdDuration = TimeSpan.FromSeconds(1)
                 });
             }
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private async void Button_Clicked(object sender, EventArgs e)
         {
             try
             {
-               
-                model.LocationStatusCollection.Clear();
-
-                IReadOnlyDictionary<string, GeofenceCircularRegion> Regions = CrossGeofence.Current.Regions;
-                foreach (GeofenceCircularRegion g in Regions.Values)
+                GeofenceResult result = new GeofenceResult()
                 {
-                    Region p = new Region()
-                    {
-                        Name = g.Id,
-                        Latitude = g.Latitude,
-                        Longitude = g.Longitude,
-                     //   LastEnteredTime = g..ToString(),
-                     //   LastExitedTime = g.LastExitTime.ToString()
-                    };
-                    model.LocationStatusCollection.Add(p);
-                }
+                    Transition = GeofenceTransition.Exited,
+                    RegionId = "Depot",
+                    Latitude = 0,
+                    Longitude = 0,
+                    LastEnterTime = DateTime.Now.AddMinutes(-5),
+                    LastExitTime = DateTime.Now                    
+                };
+
+                MessagingCenter.Send(result, "region");
+                /* AttendanceData att = new AttendanceData()
+                 {
+                     Name = "Depot",
+                     Latitude = 0,
+                     Longitude = 0,
+                     TransitionName = GeofenceTransition.Exited.ToString(),
+                     TransitionTime = DateTime.Now,
+                     UserId = 1
+                 };
+                 await UpdateAttendanceAsync(att);*/
+
+                /*  model.LocationStatusCollection.Clear();
+
+                  IReadOnlyDictionary<string, GeofenceCircularRegion> Regions = CrossGeofence.Current.Regions;
+                  foreach (GeofenceCircularRegion g in Regions.Values)
+                  {
+                      Region p = new Region()
+                      {
+                          Name = g.Id,
+                          Latitude = g.Latitude,
+                          Longitude = g.Longitude,
+                       //   LastEnteredTime = g..ToString(),
+                       //   LastExitedTime = g.LastExitTime.ToString()
+                      };
+                      model.LocationStatusCollection.Add(p);
+                  }*/
             }
             catch (Exception ex)
             {
-                DisplayAlert("",ex.Message,"OK");
+                await DisplayAlert("",ex.Message,"OK");
             }
         }
 
