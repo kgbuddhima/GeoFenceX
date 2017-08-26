@@ -53,7 +53,7 @@ namespace GeoFenceX.WebServices
         /// </summary>
         /// <param name="attendenceData"></param>
         /// <returns></returns>
-        public async Task<string> UpdateAttendence(AttendanceData attendenceData)
+        public async Task<string> UpdateAttendenceAsync(AttendanceData attendenceData)
         {
             string result = Constants.S_NotSuccess;
             try

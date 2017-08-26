@@ -20,6 +20,6 @@ namespace GeoFenceX.WebServices
         /// </summary>
         /// <param name="attendenceData"></param>
         /// <returns></returns>
-        Task<string> UpdateAttendence(AttendanceData attendenceData);
+        Task<string> UpdateAttendenceAsync(AttendanceData attendenceData);
     }
 }
