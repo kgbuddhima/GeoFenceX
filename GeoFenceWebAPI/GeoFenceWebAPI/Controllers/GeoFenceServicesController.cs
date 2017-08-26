@@ -100,7 +100,7 @@ namespace GeoFenceWebAPI.Controllers
 
         [ActionName("UpdateGeoLocation")]
         [HttpGet]
-        public HttpResponseMessage UpdateGeoLocation(string regionname, int radius, float lat, float lon)
+        public HttpResponseMessage UpdateGeoLocation(string regionname, double radius, double lat, double lon)
         {
             try
             {
