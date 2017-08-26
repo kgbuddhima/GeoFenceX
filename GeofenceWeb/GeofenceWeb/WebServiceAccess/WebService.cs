@@ -27,20 +27,7 @@ namespace GeofenceWeb.WebServiceAccess
             List<AttendanceData> col = null;
             try
             {
-                string url =string.Format("{0}{1}", rootUrl, "GetAttendanceCollection");
-                /*HttpClient client = new HttpClient();
-                
-                HttpResponseMessage response = null;
-                response = await client.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    col = JsonConvert.DeserializeObject<List<AttendanceData>>(response.Content.ToString());
-                }
-                else
-                {
-                    col = null;
-                }*/
+                string url =string.Format("{0}{1}{2}", rootUrl, "GetAttendanceCollection?userId=","1");
                 string rt;
 
                 WebRequest request = WebRequest.Create(url);
@@ -48,6 +35,7 @@ namespace GeofenceWeb.WebServiceAccess
                 Stream dataStream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(dataStream);
                 rt = reader.ReadToEnd();
+
 
                 if (!string.IsNullOrWhiteSpace(rt))
                 {
@@ -60,6 +48,42 @@ namespace GeofenceWeb.WebServiceAccess
                 throw;
             }
             return col;
+        }
+
+        public bool RegionSaved(Region region)
+        {
+            bool result = false;
+            try
+            {
+                string url = string.Format("{0}{1}", rootUrl,
+                    string.Format("UpdateGeoLocation?regionname={0}&radius={1}0&lat={2}&lon={3}",
+                    region.Name,region.Radius,region.Latitude,region.Longitude));
+                string rt;
+
+                WebRequest request = WebRequest.Create(url);
+                WebResponse response = request.GetResponse();
+                Stream dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                rt = reader.ReadToEnd();
+                string rt2 = string.Empty;
+                if (!string.IsNullOrWhiteSpace(rt))
+                {
+                    rt2 = JsonConvert.DeserializeObject<string>(rt);
+                    rt2 = Convert.ToString(rt2).Replace("\"","");
+                }
+
+                if (rt2 == "Saved")
+                {
+                    result = true;
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return result;
         }
     }
 }

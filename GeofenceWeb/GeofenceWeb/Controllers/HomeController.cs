@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using GeofenceWeb.ViewModel;
 using GeofenceWeb.WebServiceAccess;
+using GeofenceWeb.Models;
 
 namespace GeofenceWeb.Controllers
 {
@@ -45,6 +46,40 @@ namespace GeofenceWeb.Controllers
             // Attendance att = new Attendance();
             //  att.AttendanceCollection = new List<AttendanceData>();          
             return View("AttendanceView", model);
+        }
+
+        public ActionResult Region()
+        {
+            try
+            {
+                ViewBag.RegionSaved = "";
+                return View();
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CreateRegion(Region region)
+        {
+            WebService service = new WebService();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    service.RegionSaved(region);
+                }
+
+                ViewBag.RegionSaved = "Succcessfully Saved !";
+
+                return View("Region");
+            }
+            catch (Exception)
+            {
+                return View("Error");
+            }
         }
     }
 }
