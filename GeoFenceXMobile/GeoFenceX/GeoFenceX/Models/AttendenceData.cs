@@ -6,8 +6,18 @@ using System.Threading.Tasks;
 
 namespace GeoFenceX.Models
 {
-    public class AttendanceData:Region
+    public class AttendanceData
     {
+        public int RecordId { get; set; }
+
+        public string Name { get; set; }
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
+        public double Radius { get; set; }
+
         public int UserId { get; set; }
 
         public string TransitionName { get; set; }
