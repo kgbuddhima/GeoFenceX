@@ -14,6 +14,12 @@ namespace GeoFenceX.Helpers
     //Class to handle geofence events such as start/stop monitoring, region state changes and errors.
     public class CrossGeofenceListener : IGeofenceListener
     {
+
+        public void OnAppStarted()
+        {
+            //  Debug.WriteLine(string.Format("{0}", CrossGeofence.Id));
+        }
+
         public void OnMonitoringStarted(string region)
         {
            // Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Monitoring in region", region));
@@ -34,18 +40,14 @@ namespace GeoFenceX.Helpers
            // Debug.WriteLine(string.Format("{0} - {1}: {2}", CrossGeofence.Id, "Error", error));
         }
 
-
         public void OnRegionStateChanged(GeofenceResult result)
         {
+            // The problem is this event firing does not work.. -- buddhima
             if (result.Transition == GeofenceTransition.Exited || result.Transition == GeofenceTransition.Entered)
             {
+                // If this event fires, it will send the region resut using messaging center
                 MessagingCenter.Send(result, "region");
             }
-        }
-
-        public void OnAppStarted()
-        {
-          //  Debug.WriteLine(string.Format("{0}", CrossGeofence.Id));
         }
 
         public void OnLocationChanged(GeofenceLocation location)
