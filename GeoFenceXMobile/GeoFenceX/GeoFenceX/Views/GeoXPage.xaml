@@ -4,16 +4,12 @@
              xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps" 
              x:Class="GeoFenceX.Views.GeoXPage">
     <ContentPage.Content>
-        <!--<AbsoluteLayout x:Name="parentLayout">
-            <maps:Map AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
-                      AbsoluteLayout.LayoutFlags="All"  
-                      HorizontalOptions="FillAndExpand" x:Name="mapView" 
-                      IsShowingUser="true" MapType="Street">
-            
-            </maps:Map>
-        </AbsoluteLayout>-->
         <StackLayout>
-            <Button Text="Sample" TextColor="Black" BackgroundColor="GreenYellow" Clicked="Button_Clicked"></Button>
+            <Button Text="Send Att. using Msg Cntr" TextColor="Black" BackgroundColor="GreenYellow" Clicked="Button_Clicked"></Button>
+            <Button Text="Show All Regions" x:Name="btnShowRegions" TextColor="Black" 
+                    BackgroundColor="LightSkyBlue" Clicked="btnShowRegions_Clicked"></Button>
+            <Button Text="Send Sample Att. to API" x:Name="btnSendSample" TextColor="Black" 
+                    BackgroundColor="LightYellow" Clicked="btnSendSample_ClickedAsync"></Button>
             <ListView x:Name="listView" SeparatorVisibility="Default" HasUnevenRows="True">
                 <ListView.ItemTemplate>
                     <DataTemplate>

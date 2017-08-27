@@ -27,18 +27,29 @@ namespace GeoFenceX.Views
         public GeoXPage()
         {
             InitializeComponent();
+
             _service = new GeoService();
             model = new GeoLocationsStatusViewModel();
             this.BindingContext = model;
 
-            GetUserregionCollection();
-            userPlacesCollection = model.LocationStatusCollection;
+            try
+            {
+
+                GetUserregionCollection();
+                userPlacesCollection = model.LocationStatusCollection;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error loading", ex.Message, "OK");
+            }
+
 
             listView.ItemsSource = userPlacesCollection;
 
-           /* MessagingCenter.Subscribe<GeofenceResult>(this, "region", async (region) =>
+            /// Catch the region status change and send Attendance record to API
+           MessagingCenter.Subscribe<GeofenceResult>(this, "region", async (region) =>
             {
-                await DisplayAlert("Region", region.TransitionName, "OK", "Cancel");
+               // await DisplayAlert("Region", region.TransitionName, "OK", "Cancel");
                 Region p = new Region()
                 {
                     Name = region.TransitionName.ToString() + "|" + region.RegionId,
@@ -47,6 +58,7 @@ namespace GeoFenceX.Views
                     LastEnteredTime = (DateTime)region.LastEnterTime,
                     LastExitedTime = (DateTime)region.LastExitTime
                 };
+                // add region status resut to list
                 model.LocationStatusCollection.Add(p);
 
                 AttendanceData att = new AttendanceData()
@@ -58,13 +70,14 @@ namespace GeoFenceX.Views
                     TransitionTime = region.TransitionName== GeofenceTransition.Exited.ToString() ? p.LastExitedTime:p.LastEnteredTime,
                     UserId =1
                 };
+                // send record to API
                 await UpdateAttendanceAsync(att);
-            });*/
+            });
         }
 
         protected override void OnAppearing()
         {
-            
+         
         }
 
         /// <summary>
@@ -110,6 +123,11 @@ namespace GeoFenceX.Views
             }
         }
 
+        /// <summary>
+        /// Send Region change using Messaging Center and then it will be call to API
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void Button_Clicked(object sender, EventArgs e)
         {
             try
@@ -125,32 +143,6 @@ namespace GeoFenceX.Views
                 };
 
                 MessagingCenter.Send(result, "region");
-                /* AttendanceData att = new AttendanceData()
-                 {
-                     Name = "Depot",
-                     Latitude = 0,
-                     Longitude = 0,
-                     TransitionName = GeofenceTransition.Exited.ToString(),
-                     TransitionTime = DateTime.Now,
-                     UserId = 1
-                 };
-                 await UpdateAttendanceAsync(att);*/
-
-                /*  model.LocationStatusCollection.Clear();
-
-                  IReadOnlyDictionary<string, GeofenceCircularRegion> Regions = CrossGeofence.Current.Regions;
-                  foreach (GeofenceCircularRegion g in Regions.Values)
-                  {
-                      Region p = new Region()
-                      {
-                          Name = g.Id,
-                          Latitude = g.Latitude,
-                          Longitude = g.Longitude,
-                       //   LastEnteredTime = g..ToString(),
-                       //   LastExitedTime = g.LastExitTime.ToString()
-                      };
-                      model.LocationStatusCollection.Add(p);
-                  }*/
             }
             catch (Exception ex)
             {
@@ -158,35 +150,59 @@ namespace GeoFenceX.Views
             }
         }
 
-        
+        /// <summary>
+        /// Show All monitoring Regions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnShowRegions_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                IReadOnlyDictionary<string, GeofenceCircularRegion> results =  CrossGeofence.Current.Regions;
+                if (results!=null)
+                {
+                    foreach (GeofenceCircularRegion r in results.Values)
+                    {
+                        model.LocationStatusCollection.Add(new Region
+                        {
+                            Name = r.Id,
+                            Latitude = r.Latitude, Longitude=r.Longitude,
+                            Radius = r.Radius
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("btnShowRegions", ex.Message, "OK");
+            }
+        }
+
+        /// <summary>
+        /// Send Sample atendance record to API
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void btnSendSample_ClickedAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                AttendanceData att = new AttendanceData()
+                {
+                    Name = "Test Region",
+                    Latitude =6.02,
+                    Longitude = 79.01,
+                    TransitionName = GeofenceTransition.Stayed.ToString(),
+                    TransitionTime = DateTime.Now,
+                    UserId = 1
+                };
+                await UpdateAttendanceAsync(att);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("btnSendSample", ex.Message, "OK");
+            }
+        }
     }
 }
-
-/*
-            regionCollectionCircular.Add(new GeofenceCircularRegion("KesHome1", 6.79145087, 79.9490901, 10, true, true, true, true, true, true, true)
-            {
-                NotificationStayMessage = "stay message!",
-                NotificationEntryMessage = "entry message!",
-                NotificationExitMessage = "exit message!",
-                NotifyOnStay = true,
-                StayedInThresholdDuration = TimeSpan.FromSeconds(5)
-            });
-
-            regionCollectionCircular.Add(new GeofenceCircularRegion("KesHome2", 6.791989, 79.949101, 10, true, true, true, true, true, true, true)
-            {
-                NotificationStayMessage = "stay message!",
-                NotificationEntryMessage = "entry message!",
-                NotificationExitMessage = "exit message!",
-                NotifyOnStay = true,
-                StayedInThresholdDuration = TimeSpan.FromSeconds(5)
-            });
-
-            regionCollectionCircular.Add(new GeofenceCircularRegion("Depot", 6.791989, 79.948155, 10, true, true, true, true, true, true, true)
-            {
-                NotificationStayMessage = "stay message!",
-                NotificationEntryMessage = "entry message!",
-                NotificationExitMessage = "exit message!",
-                NotifyOnStay = true,
-                StayedInThresholdDuration = TimeSpan.FromSeconds(5)
-            });
-            */
